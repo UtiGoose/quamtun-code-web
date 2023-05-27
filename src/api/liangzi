@@ -1,0 +1,73 @@
+import service from "../request";
+
+
+// 得到结果
+export function compute(data) {
+    return service({
+		url: '/test/getImg',
+		method: 'post',
+        data: data
+	})
+}
+
+export function getOne(data) {
+    return service({
+		url: '/program/getOne',
+		method: 'post',
+        data: data
+	})
+}
+
+export function getPage(data) {
+    return service({
+		url: '/program/getPage',
+		method: 'post',
+        data: data
+	})
+}
+
+// 收藏
+export function addCollection(data) {
+    return service({
+		url: '/collection/add',
+		method: 'post',
+        data: data
+	})
+}
+
+// 收藏列表
+export function getCollectionList(data) {
+    return service({
+		url: '/collection/getList',
+		method: 'post',
+        data: data
+	})
+}
+
+// 历史记录
+export function getViewList(data) {
+    return service({
+		url: '/log-view/getList',
+		method: 'post',
+        data: data
+	})
+}
+
+
+// 删除收藏
+export function delCollection(data) {
+    return service({
+		url: '/collection/del',
+		method: 'post',
+        data: data
+	})
+}
+
+// 删除历史记录
+export function delView(data) {
+    return service({
+		url: '/log-view/del',
+		method: 'post',
+        data: data
+	})
+}
