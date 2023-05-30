@@ -45,3 +45,11 @@ export function getUserInfo(data) {
         data: data
 	})
 }
+// 上传头像
+export function upload(data) {
+    return service({
+		url: '/user/upload',
+		method: 'post',
+        data: data
+	})
+}

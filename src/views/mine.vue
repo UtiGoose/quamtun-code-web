@@ -2,16 +2,28 @@
     <div class="wrapper"
         style="background-image: linear-gradient(to bottom right, #D5EEFF, #F4FBFF, #D5EEFF); height: 100%;">
 
-        <el-dialog v-model="editInfoVis" title="Tips" width="30%" :before-close="handleClose">
-            <span>This is a message</span>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="dialogVisible = false">Cancel</el-button>
-                    <el-button type="primary" @click="dialogVisible = false">
-                        Confirm
-                    </el-button>
-                </span>
-            </template>
+        <el-dialog v-model="editInfoVis" title="edit info" width="50%">
+            <el-form label-position="left" label-width="100px" style="max-width: 460px">
+                <el-form-item label="Avatar">
+                    <img :src="'http://1.15.138.41:8080/static/image/' + editData.avatar" alt="" class="edit-ava-img">
+                    <el-upload class="upload-demo" action="#" :limit="1" Content-Type="multipart/form-data"
+                    http-request="http://127.0.0.1:9101/user/upload" :auto-upload="false" :on-change="handleChange">
+                        <template #trigger>
+                            <el-button type="primary">选择文件</el-button>
+                        </template>
+
+                    </el-upload>
+                </el-form-item>
+                <el-form-item label="Age">
+                    <el-input v-model="editData.age" />
+                </el-form-item>
+                <el-form-item label="Education">
+                    <el-input v-model="editData.education" />
+                </el-form-item>
+                <el-form-item label="介绍">
+                    <el-input v-model="editData.description" />
+                </el-form-item>
+            </el-form>
         </el-dialog>
 
         <div class="header-space"></div>
@@ -30,8 +42,7 @@
                     <div class="item-lable">{{ userData.education }}</div>
                     <div class="item-title">Info</div>
                     <div class="item-lable">“{{ userData.description }}” </div>
-                    <el-link type="primary" style="margin-left: 40%; margin-top: 40%;"
-                        @click="editInfoVis = true">edit</el-link>
+                    <el-link type="primary" style="margin-left: 40%; margin-top: 40%;" @click="openDia">edit</el-link>
                 </div>
                 <div class="box-box-info">
                     <div class="collection">
@@ -43,7 +54,8 @@
                             <el-table-column prop="ip" label="ip" width="200" />
                             <el-table-column fixed="right" label="Operations">
                                 <template #default="scope">
-                                    <el-popconfirm title="Are you sure to delete this?" @Confirm="_delCollection(scope.row.id)">
+                                    <el-popconfirm title="Are you sure to delete this?"
+                                        @Confirm="_delCollection(scope.row.id)">
                                         <template #reference>
                                             <el-button link type="primary" size="small">
                                                 Remove
@@ -59,7 +71,7 @@
                     <div class="history">
                         <div class="title">history</div>
                         <el-table :data="viewList" stripe
-                            style="width: 90%; margin-top: 50px; margin-left: 20px; min-height: 50%;" >
+                            style="width: 90%; margin-top: 50px; margin-left: 20px; min-height: 50%;">
                             <el-table-column prop="date" label="Date" width="200" />
                             <el-table-column prop="name" label="Name" width="200" />
                             <el-table-column prop="ip" label="ip" width="200" />
@@ -86,27 +98,77 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { getCollectionList, getViewList, delCollection, delView } from '../api/liangzi'
-import { getUserInfo } from '../api/user'
+import { getUserInfo, upload } from '../api/user'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import axios from 'axios'
 
 const router = useRouter()
-
+let editData = ref({
+    token: '',
+    avatar: '',
+    age: 0,
+    education: '',
+    description: ''
+})
 onMounted(() => {
     _getCollectionList()
     _getViewList()
     _getUserInfo()
 })
+const headers = {
+    'Content-Type': 'multipart/form-data'
+}
+let fileUpload = ref('')
+// 选择文件时被调用，将他赋值给fileUpload
+const handleChange = (file) => {
+    fileUpload.value = file
 
+    let fd = new FormData()
+    fd.append('file', file)
+    console.log(file)
+    console.log(fd.get('file'))
+
+
+}
+
+// 确定上传
+const uploadBtn = async () => {
+    let param = {}
+    // 如果是多个文件数组就循环添加一下就ok了
+    param.append("file", fileUpload.value.raw)
+    // 发个后端
+    const res = await upLoadCheckProject(param)
+    if (res.code === 200) {
+        ElMessage({
+            message: '上传成功',
+            type: 'success'
+        })
+    } else {
+        ElMessage({
+            message: '上传失败',
+            type: 'error'
+        })
+    }
+}
+
+function openDia() {
+    editInfoVis.value = true
+    editData.value.token = window.localStorage.getItem('token')
+    editData.value.age = userData.value.age
+    editData.value.avatar = userData.value.avatar
+    editData.value.education = userData.value.education
+    editData.value.description = userData.value.description
+}
 function _delCollection(id) {
-    delCollection({id: id}).then(res => {
+    delCollection({ id: id }).then(res => {
         ElMessage.success('删除成功')
         _getCollectionList()
     })
 }
 
 function _delView() {
-    delView({id: id}).then(res => {
+    delView({ id: id }).then(res => {
         ElMessage.success('删除成功')
         _getViewList()
     })
@@ -157,6 +219,11 @@ const tableData = [
 </script>
 
 <style lang="scss" scoped>
+.edit-ava-img {
+    width: 50px;
+    cursor: pointer;
+}
+
 .header-space {
     height: 50px;
 }
