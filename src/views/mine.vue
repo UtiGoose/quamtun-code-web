@@ -6,8 +6,9 @@
             <el-form label-position="left" label-width="100px" style="max-width: 460px">
                 <el-form-item label="Avatar">
                     <img :src="'http://1.15.138.41:8080/static/image/' + editData.avatar" alt="" class="edit-ava-img">
-                    <el-upload class="upload-demo" action="#" :limit="1" Content-Type="multipart/form-data"
-                    http-request="http://127.0.0.1:9101/user/upload" :auto-upload="false" :on-change="handleChange">
+                    <el-upload class="upload-demo" :limit="1" Content-Type="multipart/form-data" name="file"
+                        action="http://1.15.138.41:9091/user/upload" :on-change="handleChange"
+                        :on-success="getImgUrl">
                         <template #trigger>
                             <el-button type="primary">选择文件</el-button>
                         </template>
@@ -20,9 +21,11 @@
                 <el-form-item label="Education">
                     <el-input v-model="editData.education" />
                 </el-form-item>
-                <el-form-item label="介绍">
+                <el-form-item label="Description">
                     <el-input v-model="editData.description" />
                 </el-form-item>
+
+                <el-button @click="_updInfo">submit</el-button>
             </el-form>
         </el-dialog>
 
@@ -98,7 +101,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { getCollectionList, getViewList, delCollection, delView } from '../api/liangzi'
-import { getUserInfo, upload } from '../api/user'
+import { getUserInfo, updInfo } from '../api/user'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
@@ -116,9 +119,7 @@ onMounted(() => {
     _getViewList()
     _getUserInfo()
 })
-const headers = {
-    'Content-Type': 'multipart/form-data'
-}
+
 let fileUpload = ref('')
 // 选择文件时被调用，将他赋值给fileUpload
 const handleChange = (file) => {
@@ -128,28 +129,19 @@ const handleChange = (file) => {
     fd.append('file', file)
     console.log(file)
     console.log(fd.get('file'))
-
-
 }
-
+function getImgUrl(response) {
+    console.log("data:"+response)
+    editData.value.avatar = response
+}
 // 确定上传
-const uploadBtn = async () => {
-    let param = {}
-    // 如果是多个文件数组就循环添加一下就ok了
-    param.append("file", fileUpload.value.raw)
-    // 发个后端
-    const res = await upLoadCheckProject(param)
-    if (res.code === 200) {
-        ElMessage({
-            message: '上传成功',
-            type: 'success'
-        })
-    } else {
-        ElMessage({
-            message: '上传失败',
-            type: 'error'
-        })
-    }
+function _updInfo() {
+    updInfo(editData.value).then(res => {
+        console.log(res)
+        ElMessage.success('修改成功')
+        editInfoVis.value = false
+        router.go(0)
+    })
 }
 
 function openDia() {
@@ -167,7 +159,7 @@ function _delCollection(id) {
     })
 }
 
-function _delView() {
+function _delView(id) {
     delView({ id: id }).then(res => {
         ElMessage.success('删除成功')
         _getViewList()

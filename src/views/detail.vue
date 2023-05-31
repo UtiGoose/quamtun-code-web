@@ -23,15 +23,16 @@
     <Header></Header>
 
     <div class="main" v-loading="pageLoading">
-        <div class="cls"><span style="cursor:pointer;" @click="pushTo('list')"><el-icon style="position: relative; top: 4px">
-                <ArrowLeft />
-            </el-icon>graph</span> | 图染色 | {{ pageNo == 0 ? '第一页' : '第二页' }}</div>
+        <div class="cls"><span style="cursor:pointer;" @click="pushTo('list')"><el-icon
+                    style="position: relative; top: 4px">
+                    <ArrowLeft />
+                </el-icon>graph</span> | 图染色 | {{ pageNo == 0 ? '第一页' : '第二页' }}</div>
         <div class="title">
             {{ data.labelTitle }}
         </div>
         <div class="publish">
             <div>
-                <el-avatar :size="50" :src="'http://1.15.138.41:8080/static/image/'+data.avatar" />
+                <el-avatar :size="50" :src="'http://1.15.138.41:8080/static/image/' + data.avatar" />
             </div>
             <div class="name">{{ data.username }}</div>
             <div class="time">
@@ -143,11 +144,14 @@
 
         <!-- <el-divider><el-button type="primary" @click="dialogVisible = true">尝试一下</el-button></el-divider> -->
 
-        <div >
-            <el-icon @click="_addCollection" style="margin-top: 3px; color: #DC143C; font-size: 20px; cursor: pointer;"><StarFilled /></el-icon><span @click="_addCollection" style=" font-size: 14px; position: relative; bottom: 3px; cursor: pointer;">收藏</span>
+        <div>
+            <el-icon @click="_addCollection" style="margin-top: 3px; color: #DC143C; font-size: 20px; cursor: pointer;">
+                <StarFilled />
+            </el-icon><span @click="_addCollection"
+                style=" font-size: 14px; position: relative; bottom: 3px; cursor: pointer;">收藏</span>
         </div>
         <div class="view">
-            
+
             <el-icon style="margin-top: 3px;">
                 <View />
             </el-icon>
@@ -217,6 +221,7 @@ onMounted(() => {
     programId.value = route.query.id
     _getOne(route.query.id)
 })
+
 function pushTo(url) {
     router.push(`/${url}`)
 }
@@ -273,10 +278,10 @@ function _compute() {
     }
     // compute(params).then(res => {
     //     console.log(res)
-    //     dataImg.value = 'http://127.0.0.1:9091/image/' + res[0]
+    //     dataImg.value = 'http://1.15.138.41:8080/static/image/' + res[0]
     //     dataText.value = res[1]
     //     dataLoading.value = false
-    // })f
+    // })
     setTimeout(() => {
         dataLoading.value = false
         dataText.value = '不能完成染色。'
@@ -473,5 +478,4 @@ function backtop() {
         cursor: pointer;
         box-shadow: 3px 3px 3px gray;
     }
-}
-</style>
+}</style>

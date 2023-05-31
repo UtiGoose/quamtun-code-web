@@ -53,3 +53,10 @@ export function upload(data) {
         data: data
 	})
 }
+export function updInfo(data) {
+    return service({
+		url: '/user/upd',
+		method: 'post',
+        data: data
+	})
+}

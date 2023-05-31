@@ -32,23 +32,23 @@
             <div class="line"></div>
             <div class="right">
                 <div class="right-box">
-                    <div class="right-box-text">graph</div>
+                    <div class="right-box-text" @click="toCate(1)">graph</div>
                     <div class="right-box-count">1</div>
                 </div>
                 <div class="right-box">
-                    <div class="right-box-text">tree</div>
+                    <div class="right-box-text"  @click="toCate(2)">tree</div>
                     <div class="right-box-count">0</div>
                 </div>
                 <div class="right-box">
-                    <div class="right-box-text">DFS</div>
+                    <div class="right-box-text"  @click="toCate(3)">DFS</div>
                     <div class="right-box-count">0</div>
                 </div>
                 <div class="right-box">
-                    <div class="right-box-text">BFS</div>
+                    <div class="right-box-text"  @click="toCate(4)">BFS</div>
                     <div class="right-box-count">0</div>
                 </div>
                 <div class="right-box">
-                    <div class="right-box-text">knapsack</div>
+                    <div class="right-box-text"  @click="toCate(5)">knapsack</div>
                     <div class="right-box-count">0</div>
                 </div>
             </div>
@@ -62,7 +62,7 @@ import Header from '../components/header.vue'
 import Footer from '../components/footer.vue'
 import { useRouter } from 'vue-router'
 import { getPage } from '../api/liangzi'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 
@@ -80,22 +80,33 @@ var query = ref('')
 onMounted(() => {
     const route = useRoute()
     query.value = route.query.query
-    if (route.query.query == null) {
-        _getPage('')
-    } else {
-        _getPage(route.query.query)
+    let q = ''
+    let c = 0
+    if (route.query.query != null) {
+        q = route.query.query
     }
-    
+    if (route.query.category != null) {
+        c = route.query.category
+    }
+    _getPage(q, c)
 })
-
+watch(useRoute(), () => {
+    router.go(0)
+})
+function toCate(num) {
+    router.push(`?category=${num}`)
+    _getPage('', num)
+}
 function pushTo(url, id) {
     router.push(`/${url}?id=${id}`)
 }
-function _getPage(query) {
+function _getPage(query, category) {
     const params = {
         current: page.value.current,
-        name: query
+        name: query,
+        category: category
     }
+    console.log(params)
     getPage(params).then(res => {
         data.value = res.data.records
         console.log(res)
@@ -206,6 +217,7 @@ function _getPage(query) {
         font-size: 16px;
         margin-left: 10px;
         color: #757373;
+        cursor: pointer;
     }
 
     .right-box-count {
